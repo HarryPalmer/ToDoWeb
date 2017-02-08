@@ -1,0 +1,40 @@
+﻿@model List<ToDoWeb.Models.TodoItem>
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "To Do List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>List of To Do Items</h2>
+
+@using (Html.BeginForm("Index", "Todo", FormMethod.Get, new { @class = "form-horizontal", align = "center", role = "form", id = "frmTodo" }))
+{
+    <table style="width:100%;">
+        <thead>
+            <tr>
+                <th align="left">@Html.DisplayNameFor(model => model.First().key)</th>
+                <th align="left">@Html.DisplayNameFor(model => model.First().name)</th>
+                <th align="left">@Html.DisplayNameFor(model => model.First().IsComplete)</th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td align="left">@Html.DisplayFor(model => item.key)</td>
+                        <td align="left">@Html.DisplayFor(model => item.name)</td>
+                        <td align="left">@Html.DisplayFor(model => item.IsComplete)</td>
+                    </tr>
+                }
+        </tbody>
+    </table>
+}
+
+<script type="text/javascript">
+    function goSubmitForm() {
+        $("#frmTodo").attr("action", '@Url.Action("ToDoList")');
+        $("#frmTodo").submit();
+    }
+</script>

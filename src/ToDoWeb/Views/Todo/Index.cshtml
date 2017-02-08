@@ -1,0 +1,55 @@
+﻿@model ToDoWeb.Models.TodoItem
+@using ToDoWeb.Models;
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "To Do List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 style="position:center">To Do List</h2> <br />
+    <h4 style="position:center">Simple To Do List that will allow you to connect to a separate Web API</h4> <br />
+
+    @using (Html.BeginForm("Index", "Todo", FormMethod.Post, new { @class = "form-horizontal", align = "center", role = "form", id = "frmTodo" }))
+    {
+        <div class="row top-buffer">
+            <div class="col-md-5">
+                @*@Html.ValidationMessageFor(model => model.name)*@
+                <label control-label>List Item</label>
+            </div>
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.name, new { @class = "form-control"})
+            </div>
+        </div>
+        <div class="row top-buffer">
+            <div class="col-md-5">
+                @*@Html.ValidationMessageFor(model => model.name)*@
+                <label control-label>Is Complete?</label>
+            </div>
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.IsComplete, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row top-buffer">
+            <div class="col=md-4 text-center">
+                <button type="submit" onclick="goSubmitForm(); return false;" class="btn btn-primary text-center">Submit</button>
+            </div>
+        </div>
+    }
+
+
+</div>
+
+<script type="text/javascript">
+    function goSubmitForm() {
+        $("#frmTodo").attr("action", '@Url.Action("TodoPost")');
+        $("#frmTodo").submit();
+    }
+</script>
+
+
+
+
