@@ -121,6 +121,22 @@ namespace ToDoWeb.Controllers
             }
 
         }
+
+        public ActionResult Details(string id, string name, bool complete)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            List<TodoItem> obj = new List<TodoItem>();
+            obj.Add(new TodoItem{ key = id, name = name, IsComplete = complete});
+
+
+            return View("ToDoDetails", obj);
+
+        }
+
     }
 
     

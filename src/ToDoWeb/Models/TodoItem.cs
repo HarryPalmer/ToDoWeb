@@ -17,6 +17,6 @@ namespace ToDoWeb.Models
         public string name { get; set; }
         //[JsonProperty("IsComplete")]
         [Display(Name = "Complete")]
-        public string IsComplete { get; set; }
+        public bool IsComplete { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@model List<ToDoWeb.Models.TodoItem>
 
+
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -11,28 +12,43 @@
 
 @using (Html.BeginForm("Index", "Todo", FormMethod.Get, new { @class = "form-horizontal", align = "center", role = "form", id = "frmTodo" }))
 {
-    <table style="width:100%;">
-        <thead>
-            <tr>
-                <th align="left">@Html.DisplayNameFor(model => model.First().key)</th>
-                <th align="left">@Html.DisplayNameFor(model => model.First().name)</th>
-                <th align="left">@Html.DisplayNameFor(model => model.First().IsComplete)</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div id="table">
+        <table id="todoTable" class="table-striped, table-bordered, table-hover" style="width:100%;">
+            <thead>
+                <tr>
+                    @*<th align="left">@Html.DisplayNameFor(model => model.First().key)</th>*@
+                    <th align="left">@Html.DisplayNameFor(model => model.First().name)</th>
+                    <th align="left">@Html.DisplayNameFor(model => model.First().IsComplete)</th>
+                    <th align="left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td align="left">@Html.DisplayFor(model => item.key)</td>
+                        @*<td align="left">@Html.DisplayFor(model => item.key)</td>*@
                         <td align="left">@Html.DisplayFor(model => item.name)</td>
                         <td align="left">@Html.DisplayFor(model => item.IsComplete)</td>
+                        @*<td align="left"><a data-value="@item.key" href="javascript:void(0)" class="btn-default">Edit</a></td>*@
+                        <td align="left">
+                            @Html.ActionLink("Edit", "Edit", new { id = item.key, name = item.name, complete = item.IsComplete }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.key, name = item.name, complete = item.IsComplete }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.key, name = item.name, complete = item.IsComplete })
+                        </td>
                     </tr>
                 }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <div class="add_delete_toolbar" />
+    </div>
 }
 
-<script type="text/javascript">
+
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $('#todoTable').dataTable().makeEditable();
+    });
     function goSubmitForm() {
         $("#frmTodo").attr("action", '@Url.Action("ToDoList")');
         $("#frmTodo").submit();
