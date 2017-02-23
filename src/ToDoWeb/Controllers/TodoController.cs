@@ -13,6 +13,7 @@ using ToDoWeb.Configuration;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -70,6 +71,7 @@ namespace ToDoWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ToDoPost(TodoItem items)
         {
             if (items == null)
@@ -85,6 +87,7 @@ namespace ToDoWeb.Controllers
             return RedirectToAction("PostToApi",items);
         }
 
+        
         public async Task<ActionResult> PostToApi(TodoItem model)
         {
             string ApiPostUrl = String.Empty;
@@ -114,10 +117,6 @@ namespace ToDoWeb.Controllers
                     return View("PostError");
                 }
 
-
-                //Need to call a view here that handles the success or error message that is returned
-               // return response;
-
             }
 
         }
@@ -135,6 +134,109 @@ namespace ToDoWeb.Controllers
 
             return View("ToDoDetails", obj);
 
+        }
+
+        public ActionResult Delete(string id, string name, bool complete)
+        {
+            if (id == null)
+            {
+                return View("PostError");
+            }
+
+            List<TodoItem> obj = new List<TodoItem>();
+            obj.Add(new TodoItem { key = id, name = name, IsComplete = complete });
+
+            return View("ToDoDelete", obj);
+        }
+
+        public async Task<ActionResult> DeleteConfirmed(string id, string name, bool complete)
+        {
+            if (id == null)
+            {
+                return View("PostError");
+            }
+
+            List<TodoItem> obj = new List<TodoItem>();
+            obj.Add(new TodoItem { key = id, name = name, IsComplete = complete });
+
+            string ApiDeleteUrl = String.Empty;
+            string result = String.Empty;
+
+            ApiDeleteUrl = UrlConfig.PostUrl + id;
+
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiDeleteUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                var output = JsonConvert.SerializeObject(obj);
+                //HttpResponseMessage response = await client.PostAsync(ApiDeleteUrl, new StringContent(JsonConvert.SerializeObject(obj), System.Text.Encoding.UTF8, "application/json"));
+                HttpResponseMessage response = await client.DeleteAsync(ApiDeleteUrl);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    //Delete was a success
+                    return View("DeleteSuccess");
+                }
+                else
+                {
+                    //There was an error deleting the task
+                    return View("PostError");
+                }
+
+            }
+
+        }
+
+        public ActionResult Edit(string id, string name, bool complete)
+        {
+            if (id == null)
+            {
+                return View("PostError");
+            }
+
+            List<TodoItem> obj = new List<TodoItem>();
+            obj.Add(new TodoItem { key = id, name = name, IsComplete = complete });
+
+            //return View("ToDoEdit", obj);
+            return View(obj);
+
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(TodoItem obj)
+        {
+
+            string ApiUpdateUrl = String.Empty;
+            string result = String.Empty;
+
+            ApiUpdateUrl = UrlConfig.PostUrl + obj.key;
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiUpdateUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                var output = JsonConvert.SerializeObject(obj);
+                //HttpResponseMessage response = await client.PostAsync(ApiDeleteUrl, new StringContent(JsonConvert.SerializeObject(obj), System.Text.Encoding.UTF8, "application/json"));
+                //HttpResponseMessage response = await client.DeleteAsync(ApiUpdateUrl);
+                HttpResponseMessage response = await client.PutAsync(ApiUpdateUrl, new StringContent(JsonConvert.SerializeObject(obj), System.Text.Encoding.UTF8, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    //Delete was a success
+                    return RedirectToAction("ToDoList");
+                }
+                else
+                {
+                    //There was an error deleting the task
+                    return View("PostError");
+                }
+
+            }
+            
         }
 
     }
